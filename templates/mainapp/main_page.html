@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="container">
+        <h3 class="title-main">Сделать ставку</h3>
+        <div style="margin-top: 100px;">
+            <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" onchange="if (this.value) window.location.href = this.value">
+                <option selected value="">Выберите комнату</option>
+                {% for lottery in lotteries %}
+                    <option value="{% url "bet-lottery" id=lottery.id %}">Комната #{{ lottery.room.number }}</option>
+                {% endfor %}
+            </select>
+        </div>
+   </div>
+{% endblock content %}

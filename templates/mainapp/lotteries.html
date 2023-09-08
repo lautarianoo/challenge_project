@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="container">
+        <h3 class="title-main">Список розыгрышей</h3>
+        <div class="row" style="margin-top: 60px;">
+            <div class="col-4">
+                <form method="get" action="{% url "lotteries" %}?list-members=true" style="display: flex;
+    flex-direction: column;
+    align-items: center;">
+                    <input type="number" class="form-control" name="list-members" id="exampleFormControlInput1" placeholder="Номер розыгрыша">
+                    <button type="submit" class="btn btn-primary mt-3" id="member-btn" style="opacity: 0.8; pointer-events: none;">Список участников</button>
+                </form>
+            </div>
+            <div class="col-4" style="display: flex;
+    align-items: flex-start;
+    justify-content: center;">
+                <a href="{% url "lotteries" %}" class="btn btn-primary">Список розыгрышей</a>
+            </div>
+            <div class="col-4">
+                <form method="get" action="{% url "lotteries" %}?list-winners=true" style="display: flex;
+    flex-direction: column;
+    align-items: center;">
+                    <input type="number" class="form-control" name="list-winners" id="exampleFormControlInput2" placeholder="Номер розыгрыша">
+                    <button type="submit" class="btn btn-primary mt-3">Список победителей</button>
+                </form>
+            </div>
+        </div>
+        <div style="margin-top: 50px">
+        {% if members %}
+            <a href="{% url "export-members" id=lottery.id %}" class="btn btn-success">Выгрузить в Excel</a>
+        {% elif winners %}
+            {% if lottery %}
+                <a href="{% url "export-winners" id=lottery.id %}" class="btn btn-success">Выгрузить в Excel</a>
+            {% else %}
+                <a href="{% url "export-all-winners" %}" class="btn btn-success">Выгрузить в Excel</a>
+            {% endif %}
+        {% else %}
+            <a href="{% url "export-lottery" %}" class="btn btn-success">Выгрузить в Excel</a>
+        {% endif %}
+        <table class="member-table">
+
+                {% if not members and not winners  %}
+                    <thead>
+                        <tr>
+                            <th>Название</th>
+                            <th>Комната</th>
+                            <th>Статус</th>
+                            <th>Дата создания</th>
+                            <th>Сумма в розыгрыше, руб.</th>
+                            <th>Дата розыгрыша</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lottery in lotteries %}
+                                <tr>
+                                    <th>{{ lottery }}</th>
+                                    <th>{{ lottery.room }}</th>
+                                    <th>{% if lottery.finish %}Завершен{% else %}Не состоялся{% endif %}</th>
+                                    <th>{{ lottery.date_start }}</th>
+                                    <th>{{ lottery.summa }}</th>
+                                    <th>{{ lottery.date_end }}</th>
+                                </tr>
+                        {% endfor %}
+                    </tbody>
+                {% endif %}
+                {% if members %}
+                    <thead>
+                    <tr>
+                        <th>Токен</th>
+                        <th>Порядковый номер</th>
+                        <th>Ставка, руб.</th>
+                        <th>Выбранная цифра</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for member in members %}
+                            <tr>
+                                <th>{{ member.token_user }}</th>
+                                <th>{{ member.num_member }}</th>
+                                <th>{{ member.sum_bet }}</th>
+                                <th>{{ member.num_choose }}</th>
+                            </tr>
+                    {% endfor %}
+                </tbody>
+                {% endif %}
+                {% if winners and lottery %}
+                    <thead>
+                    <tr>
+                        <th>Токен</th>
+                        <th>Порядковый номер</th>
+                        <th>Ставка</th>
+                        <th>Выбранная цифра</th>
+                        <th>Выигрыш, руб.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for member in winners %}
+                            <tr>
+                                <th>{{ member.token_user }}</th>
+                                <th>{{ member.num_member }}</th>
+                                <th>{{ member.sum_bet }}</th>
+                                <th>{{ member.num_choose }}</th>
+                                <th>{{ member.win_money }}</th>
+                            </tr>
+                    {% endfor %}
+                </tbody>
+                {% endif %}
+                {% if winners and not lottery %}
+                    <thead>
+                    <tr>
+                        <th>Токен</th>
+                        <th>Розыгрыш</th>
+                        <th>Порядковый номер</th>
+                        <th>Ставка</th>
+                        <th>Выбранная цифра</th>
+                        <th>Выигрыш, руб.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for member in winners %}
+                            <tr>
+                                <th>{{ member.token_user }}</th>
+                                <th>{{ member.lottery }}</th>
+                                <th>{{ member.num_member }}</th>
+                                <th>{{ member.sum_bet }}</th>
+                                <th>{{ member.num_choose }}</th>
+                                <th>{{ member.win_money }}</th>
+                            </tr>
+                    {% endfor %}
+                </tbody>
+                {% endif %}
+            </table>
+        </div>
+    </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+    $('#exampleFormControlInput1').keyup(function() {
+        $('#member-btn').css("opacity", "1");
+        $('#member-btn').css("pointer-events", "auto")
+    });
+</script>
+{% endblock content %}

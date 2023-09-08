@@ -1,0 +1,33 @@
+{% extends "mainapp/main_page.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="container">
+        <h3 class="title-main">Сделать ставку</h3>
+        <div style="margin-top: 100px;">
+            <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+                <option selected>Комната #{{ lottery.room.number }}</option>
+                {% for lottery_select in lotteries %}
+                    {% if lottery != lottery_select %}
+                    <option value="{{ lottery_select.id }}">Комната #{{ lottery_select.room.number }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <div style="display: flex; justify-content: center; margin-top: 50px;">
+            <form method="post" style="width: 40%">{% csrf_token %}
+                <div class="mb-3">
+                       <label for="exampleFormControlInput1" class="form-label">Сумма ставки</label>
+                       <input type="number" class="form-control" name="sum" id="exampleFormControlInput1" placeholder="1000 руб.">
+                </div>
+                <div class="mb-3">
+                       <label for="exampleFormControlTextarea1" class="form-label">Выберите цифру (от 1 до {% if lottery.members.count > 2 %}{{ lottery.members.count }}{% else %}3{% endif %})</label>
+                       <input type="number" class="form-control" name="num" id="exampleFormControlInput1" max="{% if lottery.members.count > 2 %}{{ lottery.members.count }}{% else %}3{% endif %}">
+                </div>
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">Сделать ставку</button>
+                </div>
+            </form>
+            </div>
+        </div>
+   </div>
+{% endblock content %}
